@@ -21,23 +21,33 @@ namespace SPSiteAdmin2013
         Dictionary<string, string> _dictPSScriptCreate = new Dictionary<string, string>();
         Dictionary<string, string> _dictPSScriptCrossWebApp = new Dictionary<string, string>();
 
-        public const string _SPContentDatabase_Tmp = @"SP_Content_Temp";
+        public const string _SPContentDatabase_Tmp = @"SP_Content_Tmp";
         //site url, database name
-        public const string _PSTemplate_SPSiteMove = @"Move-SPSite {0} -DestinationDatabase {1} -Confirm:$false";
+        public const string _PSTemplate_SPSiteMove = @"Move-SPSite -Identity {0} -DestinationDatabase {1} -Confirm:$false";
         //url, database name, targetUrl
-        public const string _PSTemplate_SPSiteCopy = @"Copy-SPSite {0} -DestinationDatabase {1} -TargetUrl {2} -Confirm:$false";
+        public const string _PSTemplate_SPSiteCopy = @"Copy-SPSite -Identity {0} -DestinationDatabase {1} -TargetUrl {2}";
         //site url, folder, file
         public const string _PSTemplate_SPSiteBackup = @"Backup-SPSite {0} -Path ""{1}\{2}""";
         //site url, folder, file, database server, database name
-        public const string _PSTemplate_SPSiteRestore = @"Restore-SPSite -Identity {0} -Path ""{1}\{2}"" -Force -confirm $false";
+        public const string _PSTemplate_SPSiteRestore = @"Restore-SPSite -Identity {0} -Path ""{1}\{2}"" -Force -confirm:$false";
         //public const string _PSTemplate_RestoreSPSite = @"Restore-SPSite -Identity {0} -Path ""{1}\{2}"" -DatabaseServer {3} -DatabaseName {4} -Force";
         public const string _PSTemplate_SPSiteCreate = @"New-SPSite {0} -OwnerAlias ""{1}"" -Name ""{2}"" -Template ""{3}"" -ContentDatabase {4} -Description ""{5}""";
         // Remove-SPSite -Identity "<URL>"
-        public const string _PSTemplate_SPSiteRemove = @"Remove-SPSite -Identity {0} -confirm $false";
+        public const string _PSTemplate_SPSiteRemove = @"Remove-SPSite -Identity {0} -confirm:$false";
+        // Get-SPTimerJob -WebApplication $WebAppUrl job-site-deletion | Start-SPTimerJob
+        public const string _PSTemplate_SPSiteDeletionTimerJob = @"Get-SPTimerJob -WebApplication {0} job-site-deletion | Start-SPTimerJob";
         // Dismount-SPContentDatabase -Identity "TempContentDatabaseSource" -Confirm:$false
         public const string _PSTemplate_SPContentDatabaseDismount = @"Dismount-SPContentDatabase -Identity {0} -Confirm:$false";
-        // Mount-SPContentDatabase -AssignNewDatabaseId "SP_Content_SPTest80_HRRecords" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
-        public const string _PSTemplate_SPContentDatabaseMount = @"Mount-SPContentDatabase -AssignNewDatabaseId {0} -DatabaseServer {1} -WebApplication {2}";
+        // Mount-SPContentDatabase -AssignNewDatabaseId -Name "SP_Content_SPTest80_HRRecords" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
+        public const string _PSTemplate_SPContentDatabaseMount = @"Mount-SPContentDatabase -AssignNewDatabaseId -Name {0} -DatabaseServer {1} -WebApplication {2}";
+        // $site = Get-SPSite http://sptest2013dev.unitingcare.local/sites/HRRecordsNew
+        public const string _PSTemplate_GetSPSite = @"$site = Get-SPSite {0}";
+        // $site.RecycleBin.DeleteAll()
+        public const string _PSTemplate_SPSite_RecycleBin_DeleteAll = @"$site.RecycleBin.DeleteAll()";
+        // $site.Rename("http://sptest2013dev.unitingcare.local/sites/HRRecords")
+        public const string _PSTemplate_SPSiteRename = @"$site.Rename(""{0}"")";
+        public const string _PSTemplate_SPSiteDispose = @"$site.Dispose()";
+        public const string _PSTemplate_RefreshSitesInConfigurationDatabase = @"$site.ContentDatabase.RefreshSitesInConfigurationDatabase()";
 
         public string _SP_SQL_Instance_Name = @"";
 
@@ -174,15 +184,6 @@ namespace SPSiteAdmin2013
                 if (comboBoxInWebAppContentDBDest.Items.Count > 0)
                     comboBoxInWebAppContentDBDest.SelectedIndex = 0;
             }
-
-            if (string.IsNullOrEmpty(SPSiteAdmin2013.Properties.Settings.Default.CrossWebAppFolder) == false)
-            {
-                textBoxCrossWebAppFolder.Text = SPSiteAdmin2013.Properties.Settings.Default.CrossWebAppFolder;
-            }
-            else
-            {
-                textBoxCrossWebAppFolder.Text = Environment.CurrentDirectory;
-            }
         }
 
         private void initTabBackup()
@@ -316,8 +317,7 @@ namespace SPSiteAdmin2013
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
-                textBoxInWebAppTempDbName.Text = string.Format("Temporary database name: {0}", _SPContentDatabase_Tmp);
-                textBoxCrossWebAppTempDbName.Text = textBoxInWebAppTempDbName.Text;
+                labelTempDbName.Text = string.Format("Temporary database name: {0}", _SPContentDatabase_Tmp);
                 initTabInWebApp();
             }
             catch (Exception ex)
@@ -465,7 +465,8 @@ namespace SPSiteAdmin2013
             {
                 ;
             }
-            else if (((KeyValuePair<string, string>)objComboBoxContentDBSource.SelectedItem).Key == ((KeyValuePair<string, string>)objComboBoxContentDBDest.SelectedItem).Key)
+            else if (((KeyValuePair<string, string>)objComboBoxContentDBSource.SelectedItem).Key == ((KeyValuePair<string, string>)objComboBoxContentDBDest.SelectedItem).Key
+                    && comboBoxInWebAppManagedPath.Items.Count == 1)
             {
                 ;
             }
@@ -487,12 +488,12 @@ namespace SPSiteAdmin2013
 
         private void comboBoxInWebApp_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string strKey = ((KeyValuePair<string, string>)comboBoxInWebApp.SelectedItem).Key;
+            string strDestWebAppGUID = ((KeyValuePair<string, string>)comboBoxInWebApp.SelectedItem).Key;
 
-            PopulateContentDBs(new Guid(strKey), comboBoxInWebAppContentDBSource);
-            PopulateContentDBs(new Guid(strKey), comboBoxInWebAppContentDBDest);
+            PopulateContentDBs(new Guid(strDestWebAppGUID), comboBoxInWebAppContentDBSource);
+            PopulateContentDBs(new Guid(strDestWebAppGUID), comboBoxInWebAppContentDBDest);
 
-            SPSiteAdmin2013.Properties.Settings.Default.InWebApp = strKey;
+            SPSiteAdmin2013.Properties.Settings.Default.InWebApp = strDestWebAppGUID;
             SPSiteAdmin2013.Properties.Settings.Default.Save();
 
             if (comboBoxInWebAppContentDBSource.Items.Count > 0)
@@ -500,26 +501,53 @@ namespace SPSiteAdmin2013
                 comboBoxInWebAppContentDBSource.SelectedIndex = 0;
                 comboBoxInWebAppContentDBDest.SelectedIndex = 0;
             }
+
+            PopulateManagedPath(new Guid(strDestWebAppGUID), comboBoxInWebAppManagedPath);
+
+            if (comboBoxInWebAppManagedPath.Items.Count > 0)
+            {
+                comboBoxInWebAppManagedPath.SelectedIndex = 0;
+            }
         }
 
-        private void SetLabelInWebAppPrompt()
+        private bool SetLabelInWebAppPrompt(string strSiteUrl)
         {
+            bool boolReturn = false;
+
             labelInWebAppPrompt.Visible = false;
 
             if (comboBoxInWebAppContentDBSource.Items.Count < 1)
-                return;
+                return boolReturn;
             if (comboBoxInWebAppContentDBDest.Items.Count < 1)
-                return;
+                return boolReturn;
             if (comboBoxInWebAppContentDBSource.SelectedItem == null)
-                return;
+                return boolReturn;
             if (comboBoxInWebAppContentDBDest.SelectedItem == null)
-                return;
+                return boolReturn;
 
-            string strKeyContentDBSource = ((KeyValuePair<string, string>)comboBoxInWebAppContentDBSource.SelectedItem).Key;
-            string strKeyContentDBDest = ((KeyValuePair<string, string>)comboBoxInWebAppContentDBDest.SelectedItem).Key;
+            //string strKeyContentDBSource = ((KeyValuePair<string, string>)comboBoxInWebAppContentDBSource.SelectedItem).Key;
+            //string strKeyContentDBDest = ((KeyValuePair<string, string>)comboBoxInWebAppContentDBDest.SelectedItem).Key;
 
-            if (strKeyContentDBSource.Equals(strKeyContentDBDest, StringComparison.InvariantCultureIgnoreCase))
-                labelInWebAppPrompt.Visible = true;
+            if (comboBoxInWebAppContentDBSource.Text.Equals(comboBoxInWebAppContentDBDest.Text, StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (comboBoxInWebAppManagedPath.Items.Count == 1)
+                {
+                    boolReturn = true;
+                }
+            }
+
+            if (string.IsNullOrEmpty(strSiteUrl) == false && boolReturn == false)
+            {
+                string strManagedPathSource = GetSitePathName(strSiteUrl);
+                string strManagedpathDest = ((KeyValuePair<string, string>)comboBoxInWebAppManagedPath.SelectedItem).Value;
+                if (strManagedpathDest.Equals(strManagedPathSource, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    boolReturn = true;
+                }
+            }
+
+            labelInWebAppPrompt.Visible = boolReturn;
+            return boolReturn;
         }
 
         private void SetLabelCrossWebAppPrompt()
@@ -560,7 +588,7 @@ namespace SPSiteAdmin2013
             SPSiteAdmin2013.Properties.Settings.Default.Save();
 
             ResetStatusListBoxSPSite(comboBoxInWebAppContentDBSource, comboBoxInWebAppContentDBDest, listBoxInWebAppSPSiteSource, listBoxInWebAppSPSiteDest);
-            SetLabelInWebAppPrompt();
+            SetLabelInWebAppPrompt(string.Empty);
         }
 
         private void comboBoxInWebAppContentDBDest_SelectedIndexChanged(object sender, EventArgs e)
@@ -581,7 +609,23 @@ namespace SPSiteAdmin2013
             SPSiteAdmin2013.Properties.Settings.Default.Save();
 
             ResetStatusListBoxSPSite(comboBoxInWebAppContentDBSource, comboBoxInWebAppContentDBDest, listBoxInWebAppSPSiteSource, listBoxInWebAppSPSiteDest);
-            SetLabelInWebAppPrompt();
+            SetLabelInWebAppPrompt(string.Empty);
+        }
+
+        private string getWebAppUrlByGUID(string strWebAppGUID)
+        {
+            string strWebAppUrl = string.Empty;
+            SPWebApplication objSourceSPWebApp = SPWebService.ContentService.WebApplications[new Guid(strWebAppGUID)];
+            foreach (SPAlternateUrl altUrl in objSourceSPWebApp.AlternateUrls)
+            {
+                if (altUrl.UrlZone == SPUrlZone.Default)
+                {
+                    strWebAppUrl = altUrl.Uri.ToString();
+                    break;
+                }
+            }
+
+            return strWebAppUrl;
         }
 
         private void RefreshPSScriptTextBoxInWebApp()
@@ -589,24 +633,52 @@ namespace SPSiteAdmin2013
             string strLine = string.Empty;
             textBoxPSScript.Text = string.Empty;
 
-            foreach (string strKey in _dictPSScriptInWebApp.Keys)
+            string strWebAppGUID = ((KeyValuePair<string, string>)comboBoxInWebApp.SelectedItem).Key;
+            string strWebAppUrl = getWebAppUrlByGUID(strWebAppGUID);
+            string strSiteUrlDest = string.Empty;
+
+            foreach (string strSiteUrlSource in _dictPSScriptInWebApp.Keys)
             {
                 // Move-SPSite http://sharepoint/sites/moveme -DestinationDatabase WSS_Content2 
                 if (radioButtonInWebAppMove.Checked)
                 {
-                    strLine = string.Format(_PSTemplate_SPSiteMove, strKey, comboBoxInWebAppContentDBDest.Text);
+                    if (comboBoxInWebAppContentDBSource.Text.Equals(comboBoxInWebAppContentDBDest.Text, StringComparison.InvariantCultureIgnoreCase) == false)
+                    {
+                        strLine = string.Format(_PSTemplate_SPSiteMove, strSiteUrlSource, comboBoxInWebAppContentDBDest.Text);
+                        textBoxPSScript.Text += strLine + Environment.NewLine;
+                    }
+                    else
+                    {
+                        string strManagedPathSource = GetSitePathName(strSiteUrlSource);
+                        string strManagedpathDest = ((KeyValuePair<string, string>)comboBoxInWebAppManagedPath.SelectedItem).Value;
+                        strSiteUrlDest = strSiteUrlSource.Replace(strManagedPathSource, strManagedpathDest);
+                        string strContentDB = ((KeyValuePair<string, string>)comboBoxInWebAppContentDBDest.SelectedItem).Value;
+
+                        changeSiteManagedPath(strWebAppUrl, strContentDB, strSiteUrlSource, strSiteUrlDest);
+                    }
                 }
                 else
                 {
-                    strLine = string.Format(_PSTemplate_SPSiteCopy, strKey, comboBoxInWebAppContentDBDest.Text, strKey + "New");
+                    strSiteUrlDest = strSiteUrlSource + "New";
+
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strWebAppUrl);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    strLine = string.Format(_PSTemplate_SPSiteCopy, strSiteUrlSource, comboBoxInWebAppContentDBDest.Text, strSiteUrlDest);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    strLine = string.Format(_PSTemplate_SPSiteMove, strSiteUrlDest, comboBoxInWebAppContentDBSource.Text);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
                 }
-                textBoxPSScript.Text += strLine + Environment.NewLine;
             }
         }
 
         private void listBoxInWebApp_DragDrop(object sender, DragEventArgs e, ListBox objListBoxSource, ListBox objListBoxDest)
         {
-            string strKey = string.Empty;
+            string strKey_SiteUrl = string.Empty;
             string strValue = string.Empty;
             ListBox.SelectedObjectCollection objItems = objListBoxSource.SelectedItems;
             int iCurrent = int.MinValue;
@@ -615,27 +687,34 @@ namespace SPSiteAdmin2013
             if (objListBoxSource.SelectedItem == null)
                 return;
 
-            strKey = ((KeyValuePair<string, string>)objListBoxSource.SelectedItem).Key;
+            strKey_SiteUrl = ((KeyValuePair<string, string>)objListBoxSource.SelectedItem).Key;
             strValue = ((KeyValuePair<string, string>)objListBoxSource.SelectedItem).Value;
             if (objListBoxSource == listBoxInWebAppSPSiteSource)
             {
-                if (_dictPSScriptInWebApp.ContainsKey(strKey) == false)
+                if (_dictPSScriptInWebApp.ContainsKey(strKey_SiteUrl) == false)
                 {
-                    _dictPSScriptInWebApp.Add(strKey, strValue);
+                    _dictPSScriptInWebApp.Add(strKey_SiteUrl, strValue);
                     boolChangeFlag = true;
                 }
             }
             else
             {
-                if (_dictPSScriptInWebApp.ContainsKey(strKey))
+                if (_dictPSScriptInWebApp.ContainsKey(strKey_SiteUrl))
                 {
-                    _dictPSScriptInWebApp.Remove(strKey);
+                    _dictPSScriptInWebApp.Remove(strKey_SiteUrl);
                     boolChangeFlag = true;
                 }
             }
 
             if (boolChangeFlag)
             {
+                bool boolReturn = SetLabelInWebAppPrompt(strKey_SiteUrl);
+                if (boolReturn)
+                {
+                    _dictPSScriptInWebApp.Remove(strKey_SiteUrl);
+                    return;
+                }
+
                 foreach (var item in objItems)
                 {
                     iCurrent = objListBoxDest.Items.Add(item);
@@ -645,6 +724,162 @@ namespace SPSiteAdmin2013
                     objListBoxSource.Items.Remove(objListBoxSource.SelectedItems[0]);
                 }
                 RefreshPSScriptTextBoxInWebApp();
+            }
+        }
+
+        private void renameSiteUrl(string strSiteUrlSource, string strSiteUrlDest)
+        {
+            string strLine = string.Empty;
+
+            //$site = Get-SPSite http://portal.odfbdemo.com/sites/oldpath 
+            //$uri = New-Object System.Uri("http://portal.odfbdemo.com/sites/shinynewpath")
+            //$site.Rename($uri)
+            //((Get-SPSite http://portal.odfbdemo.com/sites/shinynewpath).contentdatabase).RefreshSitesInConfigurationDatabase
+
+            strLine = string.Format(_PSTemplate_GetSPSite, strSiteUrlSource);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            textBoxPSScript.Text += _PSTemplate_SPSite_RecycleBin_DeleteAll + Environment.NewLine;
+
+            strLine = string.Format(_PSTemplate_SPSiteRename, strSiteUrlDest);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            textBoxPSScript.Text += _PSTemplate_SPSiteDispose + Environment.NewLine;
+
+            strLine = string.Format(_PSTemplate_GetSPSite, strSiteUrlDest);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            textBoxPSScript.Text += _PSTemplate_RefreshSitesInConfigurationDatabase + Environment.NewLine;
+
+            textBoxPSScript.Text += _PSTemplate_SPSiteDispose + Environment.NewLine;
+        }
+
+        private void changeSiteManagedPath(string strWebAppUrl, string strContentDatabaseName, string strSiteUrlSource, string strSiteUrlDest)
+        {
+            string strLine = string.Empty;
+
+            // Mount-SPContentDatabase -AssignNewDatabaseId -Name "TempContentDatabaseSource" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
+            strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strWebAppUrl);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            //Copy-SPSite http://$webAppSource$envSuffix/sites/$siteNameSource -DestinationDatabase $databaseNameTmp -TargetUrl http://$webAppSource$envSuffix/sites/$siteNameDest
+            strLine = string.Format(_PSTemplate_SPSiteCopy, strSiteUrlSource, _SPContentDatabase_Tmp, strSiteUrlDest);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            strLine = string.Format(_PSTemplate_SPSiteRemove, strSiteUrlSource);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            strLine = string.Format(_PSTemplate_SPSiteDeletionTimerJob, strWebAppUrl);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+            
+            //Move-SPSite http://$webAppSource$envSuffix/sites/$siteNameDest -DestinationDatabase $databaseNameSource -Confirm:$false
+            strLine = string.Format(_PSTemplate_SPSiteMove, strSiteUrlDest, strContentDatabaseName);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            strLine = string.Format(_PSTemplate_SPSiteDeletionTimerJob, strWebAppUrl);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+
+            //Dismount-SPContentDatabase - Identity $databaseNameTmp - Confirm:$false
+            strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
+            textBoxPSScript.Text += strLine + Environment.NewLine;
+        }
+        
+        private void RefreshPSScriptTextBoxCrossWebApp()
+        {
+            //string strSiteUrl = string.Empty;
+            string strFileFullPath = string.Empty;
+            string strLine = string.Empty;
+            textBoxPSScript.Text = string.Empty;
+
+            string strManagedPathDest = ((KeyValuePair<string, string>)comboBoxCrossWebAppManagedPath.SelectedItem).Key;
+            string strContentDB = ((KeyValuePair<string, string>)comboBoxCrossWebAppContentDBDest.SelectedItem).Value;
+
+            string strSourceWebAppGUID = ((KeyValuePair<string, string>)comboBoxCrossWebAppSource.SelectedItem).Key;
+            string strWebAppUrlSource = getWebAppUrlByGUID(strSourceWebAppGUID);
+
+            string strDestWebAppGUID = ((KeyValuePair<string, string>)comboBoxCrossWebAppDest.SelectedItem).Key;
+            string strWebAppUrlDest = getWebAppUrlByGUID(strDestWebAppGUID);
+
+            string strSiteUrlTmp = string.Empty;
+            string strSiteUrlDest = string.Empty;
+            string strManagedPathSource = string.Empty;
+
+            //for (int i = 0; i < listBoxCrossWebAppSPSiteSource.SelectedItems.Count; i++)
+            foreach (string strSourceSiteUrl in _dictPSScriptCrossWebApp.Keys)
+            {
+                strSiteUrlDest = strSourceSiteUrl.Replace(strWebAppUrlSource, strWebAppUrlDest);
+
+                if (radioButtonCrossWebAppMove.Checked)
+                {
+                    // Mount-SPContentDatabase -AssignNewDatabaseId -Name "TempContentDatabaseSource" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strWebAppUrlSource);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Move-SPSite http://$webAppSource$envSuffix/sites/$siteNameDest -DestinationDatabase $databaseNameSource -Confirm:$false
+                    strLine = string.Format(_PSTemplate_SPSiteMove, strSourceSiteUrl, _SPContentDatabase_Tmp);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    strLine = string.Format(_PSTemplate_SPSiteDeletionTimerJob, strWebAppUrlSource);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Dismount-SPContentDatabase - Identity $databaseNameTmp - Confirm:$false
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    // Mount-SPContentDatabase -AssignNewDatabaseId -Name "TempContentDatabaseSource" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strWebAppUrlDest);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Move-SPSite http://$webAppSource$envSuffix/sites/$siteNameDest -DestinationDatabase $databaseNameSource -Confirm:$false
+                    strLine = string.Format(_PSTemplate_SPSiteMove, strSiteUrlDest, comboBoxCrossWebAppContentDBDest.Text);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    strLine = string.Format(_PSTemplate_SPSiteDeletionTimerJob, strWebAppUrlDest);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Dismount-SPContentDatabase - Identity $databaseNameTmp - Confirm:$false
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+                }
+                else
+                {
+                    // Mount-SPContentDatabase -AssignNewDatabaseId -Name "TempContentDatabaseSource" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strWebAppUrlSource);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Copy-SPSite http://$webAppSource$envSuffix/sites/$siteNameSource -DestinationDatabase $databaseNameTmp -TargetUrl http://$webAppSource$envSuffix/sites/$siteNameDest
+                    strLine = string.Format(_PSTemplate_SPSiteCopy, strSourceSiteUrl, _SPContentDatabase_Tmp, strSourceSiteUrl + "New");
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Dismount-SPContentDatabase - Identity $databaseNameTmp - Confirm:$false
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Mount-SPContentDatabase -AssignNewDatabaseId -Name "TempContentDatabaseSource" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strWebAppUrlDest);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Move-SPSite http://$webAppSource$envSuffix/sites/$siteNameDest -DestinationDatabase $databaseNameSource -Confirm:$false
+                    strLine = string.Format(_PSTemplate_SPSiteMove, strSiteUrlDest + "New", comboBoxCrossWebAppContentDBDest.Text);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    strLine = string.Format(_PSTemplate_SPSiteDeletionTimerJob, strWebAppUrlDest);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    //Dismount-SPContentDatabase - Identity $databaseNameTmp - Confirm:$false
+                    strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
+                    textBoxPSScript.Text += strLine + Environment.NewLine;
+
+                    renameSiteUrl(strSiteUrlDest + "New", strSiteUrlDest);
+                }
+                strManagedPathSource = GetSitePathName(strSourceSiteUrl);
+                if (strManagedPathSource.Equals(strManagedPathDest) != true)
+                {
+                    strSiteUrlTmp = strSiteUrlDest;
+                    strSiteUrlDest = strSiteUrlDest.Replace(strManagedPathSource, strManagedPathDest);
+
+                    changeSiteManagedPath(strWebAppUrlDest, strContentDB, strSiteUrlTmp, strSiteUrlDest);
+                }
             }
         }
 
@@ -806,15 +1041,22 @@ namespace SPSiteAdmin2013
         private string GetSitePathName(string strSiteUrl)
         {
             string strSitePathName = string.Empty;
-            int iPos = int.MinValue;
+            int iPosFirst = int.MinValue;
+            int iPosSecond = int.MinValue;
 
             using (SPSite site = new SPSite(strSiteUrl))
             {
                 using (SPWeb web = site.OpenWeb())
                 {
-                    iPos = web.ServerRelativeUrl.LastIndexOf('/');
-                    if (iPos > 0)
-                        strSitePathName = web.ServerRelativeUrl.Substring(iPos + 1);
+                    iPosFirst = web.ServerRelativeUrl.IndexOf('/');
+                    if (iPosFirst >= 0)
+                    {
+                        iPosSecond = web.ServerRelativeUrl.IndexOf('/', iPosFirst + 1);
+                        if (iPosSecond > 0)
+                        {
+                            strSitePathName = web.ServerRelativeUrl.Substring(iPosFirst + 1, iPosSecond - iPosFirst - 1);
+                        }
+                    }
                 }
             }
             return strSitePathName;
@@ -1032,17 +1274,8 @@ namespace SPSiteAdmin2013
             if (string.IsNullOrEmpty(strSitePathName) || string.IsNullOrEmpty(strSiteName))
                 return;
 
-            string strKeyWebApp = ((KeyValuePair<string, string>)comboBoxWebAppCreate.SelectedItem).Key;
-            SPWebApplication objSPWebApp = SPWebService.ContentService.WebApplications[new Guid(strKeyWebApp)];
-            string strWebAppUrl = string.Empty;
-            foreach (SPAlternateUrl altUrl in objSPWebApp.AlternateUrls)
-            {
-                if (altUrl.UrlZone == SPUrlZone.Default)
-                {
-                    strWebAppUrl = altUrl.Uri.ToString();
-                    break;
-                }
-            }
+            string strKeyWebAppGUID = ((KeyValuePair<string, string>)comboBoxWebAppCreate.SelectedItem).Key;
+            string strWebAppUrl = getWebAppUrlByGUID(strKeyWebAppGUID);
 
             string strManagedPath = ((KeyValuePair<string, string>)comboBoxCreateManagedPath.SelectedItem).Key;
             string strContentDB = ((KeyValuePair<string, string>)comboBoxContentDBCreate.SelectedItem).Value;
@@ -1118,11 +1351,11 @@ namespace SPSiteAdmin2013
 
         private void comboBoxCrossWebAppDest_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string strKey = ((KeyValuePair<string, string>)comboBoxCrossWebAppDest.SelectedItem).Key;
+            string strDestWebAppGUID = ((KeyValuePair<string, string>)comboBoxCrossWebAppDest.SelectedItem).Key;
 
-            PopulateContentDBs(new Guid(strKey), comboBoxCrossWebAppContentDBDest);
+            PopulateContentDBs(new Guid(strDestWebAppGUID), comboBoxCrossWebAppContentDBDest);
 
-            SPSiteAdmin2013.Properties.Settings.Default.CrossWebAppDest = strKey;
+            SPSiteAdmin2013.Properties.Settings.Default.CrossWebAppDest = strDestWebAppGUID;
             SPSiteAdmin2013.Properties.Settings.Default.Save();
 
             if (comboBoxCrossWebAppContentDBDest.Items.Count > 0)
@@ -1130,9 +1363,9 @@ namespace SPSiteAdmin2013
                 comboBoxCrossWebAppContentDBDest.SelectedIndex = 0;
             }
 
-            PopulateManagedPath(new Guid(strKey), comboBoxCrossWebAppManagedPath);
+            PopulateManagedPath(new Guid(strDestWebAppGUID), comboBoxCrossWebAppManagedPath);
 
-            SPSiteAdmin2013.Properties.Settings.Default.CrossWebAppManagedPath = strKey;
+            SPSiteAdmin2013.Properties.Settings.Default.CrossWebAppDest = strDestWebAppGUID;
             SPSiteAdmin2013.Properties.Settings.Default.Save();
 
             if (comboBoxCrossWebAppManagedPath.Items.Count > 0)
@@ -1231,145 +1464,6 @@ namespace SPSiteAdmin2013
 
                 listBoxCrossWebApp_DragDrop(null, null, listBoxCrossWebAppSPSiteSource, listBoxCrossWebAppSPSiteDest);
             }
-        }
-
-        private void RefreshPSScriptTextBoxCrossWebApp()
-        {
-            //string strSiteUrl = string.Empty;
-            string strFileFullPath = string.Empty;
-            string strLine = string.Empty;
-            string strSitePathName = string.Empty;
-            textBoxPSScript.Text = string.Empty;
-
-            string strManagedPath = ((KeyValuePair<string, string>)comboBoxCrossWebAppManagedPath.SelectedItem).Key;
-            string strContentDB = ((KeyValuePair<string, string>)comboBoxCrossWebAppContentDBDest.SelectedItem).Value;
-
-            string strSourceWebAppUrl = string.Empty;
-            string strSourceWebAppGUID = ((KeyValuePair<string, string>)comboBoxCrossWebAppSource.SelectedItem).Key;
-            SPWebApplication objSourceSPWebApp = SPWebService.ContentService.WebApplications[new Guid(strSourceWebAppGUID)];
-            foreach (SPAlternateUrl altUrl in objSourceSPWebApp.AlternateUrls)
-            {
-                if (altUrl.UrlZone == SPUrlZone.Default)
-                {
-                    strSourceWebAppUrl = altUrl.Uri.ToString();
-                    break;
-                }
-            }
-
-            string strDestWebAppUrl = string.Empty;
-            string strDestWebAppGUID = ((KeyValuePair<string, string>)comboBoxCrossWebAppDest.SelectedItem).Key;
-            SPWebApplication objDestSPWebApp = SPWebService.ContentService.WebApplications[new Guid(strDestWebAppGUID)];
-            foreach (SPAlternateUrl altUrl in objDestSPWebApp.AlternateUrls)
-            {
-                if (altUrl.UrlZone == SPUrlZone.Default)
-                {
-                    strDestWebAppUrl = altUrl.Uri.ToString();
-                    break;
-                }
-            }
-
-            //for (int i = 0; i < listBoxCrossWebAppSPSiteSource.SelectedItems.Count; i++)
-            foreach (string strSourceSiteUrl in _dictPSScriptCrossWebApp.Keys)
-            {
-                string strDestSiteUrl = strSourceSiteUrl.Replace(strSourceWebAppUrl, strDestWebAppUrl);
-
-                if (radioButtonCrossWebAppMove.Checked)
-                {
-                    // backup site collection
-                    // Backup-SPSite {0} -Path ""{1}\{2}""
-
-                    //strSiteUrl = ((KeyValuePair<string, string>)listBoxCrossWebAppSPSiteSource.SelectedItems[i]).Key;
-                    strFileFullPath = GetFileName(strSourceSiteUrl);
-                    strLine = string.Format(_PSTemplate_SPSiteBackup, strSourceSiteUrl, textBoxCrossWebAppFolder.Text, strFileFullPath);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    // create site collection
-                    // New-SPSite {0} -OwnerAlias ""{1}"" -Name ""{2}"" -Template ""{3}"" -ContentDatabase {4} -Description ""{5}""
-
-                    strSitePathName = GetSitePathName(strSourceSiteUrl);
-                    string strSiteFullPath = string.Format(@"{0}{1}/{2}", strDestSiteUrl, strManagedPath, strSitePathName);
-                    string strSiteTemplate = "STS#1";
-
-                    string strSiteDescription = string.Empty;
-                    string strSiteCollectionOwnerLogin = string.Format(@"{0}\{1}", Environment.UserDomainName, Environment.UserName);
-
-                    strLine = string.Format(_PSTemplate_SPSiteCreate, strSiteFullPath, strSiteCollectionOwnerLogin,
-                        strSitePathName, strSiteTemplate, strContentDB, strSiteDescription);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    // remove site collection
-                    strLine = string.Format(_PSTemplate_SPSiteRemove, strSourceSiteUrl);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    // restore site collection
-                    // Restore-SPSite -Identity {0} -Path ""{1}\{2}"" -Force -confirm $false
-                    strLine = string.Format(_PSTemplate_SPSiteRestore, strDestSiteUrl, textBoxCrossWebAppFolder.Text, strFileFullPath);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-                }
-                else
-                {
-                    // Mount-SPContentDatabase -AssignNewDatabaseId "TempContentDatabaseSource" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
-                    strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strSourceWebAppUrl);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    //copy/generate a new site collection in temporary content database
-                    // Copy-SPSite $urlSource -DestinationDatabase $databaseName -TargetUrl $urlDest
-                    strLine = string.Format(_PSTemplate_SPSiteCopy, strSourceSiteUrl, _SPContentDatabase_Tmp, strSourceSiteUrl + "New");
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    //dismount the temporary content database
-                    // Dismount-SPContentDatabase -Identity "TempContentDatabaseSource" -Confirm:$false
-                    strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    // Mount-SPContentDatabase -AssignNewDatabaseId "TempContentDatabaseSource" -DatabaseServer "sp2013dbDEV" -WebApplication "http://SPTest2013DEV.unitingcare.local"
-                    strLine = string.Format(_PSTemplate_SPContentDatabaseMount, _SPContentDatabase_Tmp, _SP_SQL_Instance_Name, strDestWebAppUrl);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    // Move SPSite
-                    // Move-SPSite $url -DestinationDatabase WSS_Content2 
-                    strLine = string.Format(_PSTemplate_SPSiteMove, strDestSiteUrl + "New", strContentDB, strDestSiteUrl);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-
-                    // Dismount-SPContentDatabase -Identity "TempContentDatabaseSource" -Confirm:$false
-                    strLine = string.Format(_PSTemplate_SPContentDatabaseDismount, _SPContentDatabase_Tmp);
-                    textBoxPSScript.Text += strLine + Environment.NewLine;
-                }
-
-                textBoxPSScript.Text += Environment.NewLine;
-            }
-        }
-
-        private void buttonCrossWebAppBrowse_Click(object sender, EventArgs e)
-        {
-            string strFolderPath = string.Empty;
-            strFolderPath = GetFolderPath();
-            if (string.IsNullOrEmpty(strFolderPath) == false)
-            {
-                SPSiteAdmin2013.Properties.Settings.Default.CrossWebAppFolder = strFolderPath;
-                SPSiteAdmin2013.Properties.Settings.Default.Save();
-                textBoxCrossWebAppFolder.Text = strFolderPath;
-            }
-        }
-
-        private void textBoxCrossWebAppFolder_TextChanged(object sender, EventArgs e)
-        {
-            RefreshPSScriptTextBoxCrossWebApp();
-        }
-
-        private void radioButtonInWebAppCopy_CheckedChanged(object sender, EventArgs e)
-        {
-            textBoxInWebAppTempDbName.Visible = radioButtonInWebAppCopy.Checked;
-        }
-
-        private void radioButtonInWebAppMove_CheckedChanged(object sender, EventArgs e)
-        {
-            textBoxInWebAppTempDbName.Visible = radioButtonInWebAppCopy.Checked;
-        }
-
-        private void radioButtonCrossWebAppCopy_CheckedChanged(object sender, EventArgs e)
-        {
-            textBoxCrossWebAppTempDbName.Visible = radioButtonCrossWebAppCopy.Checked;
         }
     }
 }

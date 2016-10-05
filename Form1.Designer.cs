@@ -103,9 +103,6 @@
             this.radioButtonCrossWebAppMove = new System.Windows.Forms.RadioButton();
             this.label33 = new System.Windows.Forms.Label();
             this.comboBoxCrossWebAppManagedPath = new System.Windows.Forms.ComboBox();
-            this.buttonCrossWebAppBrowse = new System.Windows.Forms.Button();
-            this.textBoxCrossWebAppFolder = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
             this.comboBoxCrossWebAppDest = new System.Windows.Forms.ComboBox();
             this.labelCrossWebAppPrompt = new System.Windows.Forms.Label();
@@ -127,8 +124,9 @@
             this.buttonClearPSScript = new System.Windows.Forms.Button();
             this.textBoxPSScript = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.textBoxInWebAppTempDbName = new System.Windows.Forms.TextBox();
-            this.textBoxCrossWebAppTempDbName = new System.Windows.Forms.TextBox();
+            this.labelTempDbName = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.comboBoxInWebAppManagedPath = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPageInWebApp.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -142,9 +140,6 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPageInWebApp);
             this.tabControl1.Controls.Add(this.tabPageBackup);
             this.tabControl1.Controls.Add(this.tabPageRestore);
@@ -159,7 +154,8 @@
             // 
             // tabPageInWebApp
             // 
-            this.tabPageInWebApp.Controls.Add(this.textBoxInWebAppTempDbName);
+            this.tabPageInWebApp.Controls.Add(this.comboBoxInWebAppManagedPath);
+            this.tabPageInWebApp.Controls.Add(this.label4);
             this.tabPageInWebApp.Controls.Add(this.groupBox1);
             this.tabPageInWebApp.Controls.Add(this.textBoxInWebAppDestDBSiteCount);
             this.tabPageInWebApp.Controls.Add(this.label37);
@@ -215,7 +211,6 @@
             this.radioButtonInWebAppCopy.TabStop = true;
             this.radioButtonInWebAppCopy.Text = "Copy";
             this.radioButtonInWebAppCopy.UseVisualStyleBackColor = true;
-            this.radioButtonInWebAppCopy.CheckedChanged += new System.EventHandler(this.radioButtonInWebAppCopy_CheckedChanged);
             // 
             // radioButtonInWebAppMove
             // 
@@ -228,11 +223,10 @@
             this.radioButtonInWebAppMove.TabStop = true;
             this.radioButtonInWebAppMove.Text = "Move";
             this.radioButtonInWebAppMove.UseVisualStyleBackColor = true;
-            this.radioButtonInWebAppMove.CheckedChanged += new System.EventHandler(this.radioButtonInWebAppMove_CheckedChanged);
             // 
             // textBoxInWebAppDestDBSiteCount
             // 
-            this.textBoxInWebAppDestDBSiteCount.Location = new System.Drawing.Point(778, 109);
+            this.textBoxInWebAppDestDBSiteCount.Location = new System.Drawing.Point(778, 82);
             this.textBoxInWebAppDestDBSiteCount.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxInWebAppDestDBSiteCount.Name = "textBoxInWebAppDestDBSiteCount";
             this.textBoxInWebAppDestDBSiteCount.ReadOnly = true;
@@ -243,7 +237,7 @@
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(783, 58);
+            this.label37.Location = new System.Drawing.Point(786, 42);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(53, 13);
             this.label37.TabIndex = 31;
@@ -280,7 +274,7 @@
             // 
             // textBoxInWebAppDestDBSize
             // 
-            this.textBoxInWebAppDestDBSize.Location = new System.Drawing.Point(842, 109);
+            this.textBoxInWebAppDestDBSize.Location = new System.Drawing.Point(842, 82);
             this.textBoxInWebAppDestDBSize.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxInWebAppDestDBSize.Name = "textBoxInWebAppDestDBSize";
             this.textBoxInWebAppDestDBSize.ReadOnly = true;
@@ -291,7 +285,7 @@
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(854, 58);
+            this.label36.Location = new System.Drawing.Point(854, 42);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(48, 13);
             this.label36.TabIndex = 25;
@@ -330,11 +324,11 @@
             // 
             this.labelInWebAppPrompt.AutoSize = true;
             this.labelInWebAppPrompt.ForeColor = System.Drawing.Color.Red;
-            this.labelInWebAppPrompt.Location = new System.Drawing.Point(554, 90);
+            this.labelInWebAppPrompt.Location = new System.Drawing.Point(554, 63);
             this.labelInWebAppPrompt.Name = "labelInWebAppPrompt";
-            this.labelInWebAppPrompt.Size = new System.Drawing.Size(203, 13);
+            this.labelInWebAppPrompt.Size = new System.Drawing.Size(286, 13);
             this.labelInWebAppPrompt.TabIndex = 20;
-            this.labelInWebAppPrompt.Text = "please choose different content database";
+            this.labelInWebAppPrompt.Text = "please choose different content database or managed path";
             this.labelInWebAppPrompt.Visible = false;
             // 
             // buttonInWebAppReset
@@ -404,7 +398,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(452, 112);
+            this.label6.Location = new System.Drawing.Point(452, 85);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(91, 13);
             this.label6.TabIndex = 9;
@@ -414,7 +408,7 @@
             // 
             this.comboBoxInWebAppContentDBDest.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxInWebAppContentDBDest.FormattingEnabled = true;
-            this.comboBoxInWebAppContentDBDest.Location = new System.Drawing.Point(554, 109);
+            this.comboBoxInWebAppContentDBDest.Location = new System.Drawing.Point(554, 82);
             this.comboBoxInWebAppContentDBDest.Name = "comboBoxInWebAppContentDBDest";
             this.comboBoxInWebAppContentDBDest.Size = new System.Drawing.Size(219, 21);
             this.comboBoxInWebAppContentDBDest.TabIndex = 8;
@@ -461,7 +455,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(586, 58);
+            this.label2.Location = new System.Drawing.Point(586, 42);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 13);
             this.label2.TabIndex = 1;
@@ -845,7 +839,7 @@
             this.listBoxSPSiteCreate.HorizontalScrollbar = true;
             this.listBoxSPSiteCreate.Location = new System.Drawing.Point(461, 45);
             this.listBoxSPSiteCreate.Name = "listBoxSPSiteCreate";
-            this.listBoxSPSiteCreate.Size = new System.Drawing.Size(429, 329);
+            this.listBoxSPSiteCreate.Size = new System.Drawing.Size(445, 394);
             this.listBoxSPSiteCreate.TabIndex = 24;
             // 
             // label21
@@ -888,13 +882,9 @@
             // 
             // tabPageCrossWebApp
             // 
-            this.tabPageCrossWebApp.Controls.Add(this.textBoxCrossWebAppTempDbName);
             this.tabPageCrossWebApp.Controls.Add(this.groupBox2);
             this.tabPageCrossWebApp.Controls.Add(this.label33);
             this.tabPageCrossWebApp.Controls.Add(this.comboBoxCrossWebAppManagedPath);
-            this.tabPageCrossWebApp.Controls.Add(this.buttonCrossWebAppBrowse);
-            this.tabPageCrossWebApp.Controls.Add(this.textBoxCrossWebAppFolder);
-            this.tabPageCrossWebApp.Controls.Add(this.label4);
             this.tabPageCrossWebApp.Controls.Add(this.label32);
             this.tabPageCrossWebApp.Controls.Add(this.comboBoxCrossWebAppDest);
             this.tabPageCrossWebApp.Controls.Add(this.labelCrossWebAppPrompt);
@@ -941,7 +931,6 @@
             this.radioButtonCrossWebAppCopy.TabStop = true;
             this.radioButtonCrossWebAppCopy.Text = "Copy";
             this.radioButtonCrossWebAppCopy.UseVisualStyleBackColor = true;
-            this.radioButtonCrossWebAppCopy.CheckedChanged += new System.EventHandler(this.radioButtonCrossWebAppCopy_CheckedChanged);
             // 
             // radioButtonCrossWebAppMove
             // 
@@ -958,7 +947,7 @@
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(451, 171);
+            this.label33.Location = new System.Drawing.Point(451, 132);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(77, 13);
             this.label33.TabIndex = 42;
@@ -968,43 +957,15 @@
             // 
             this.comboBoxCrossWebAppManagedPath.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCrossWebAppManagedPath.FormattingEnabled = true;
-            this.comboBoxCrossWebAppManagedPath.Location = new System.Drawing.Point(553, 168);
+            this.comboBoxCrossWebAppManagedPath.Location = new System.Drawing.Point(553, 129);
             this.comboBoxCrossWebAppManagedPath.Name = "comboBoxCrossWebAppManagedPath";
             this.comboBoxCrossWebAppManagedPath.Size = new System.Drawing.Size(350, 21);
             this.comboBoxCrossWebAppManagedPath.TabIndex = 41;
             // 
-            // buttonCrossWebAppBrowse
-            // 
-            this.buttonCrossWebAppBrowse.Location = new System.Drawing.Point(814, 59);
-            this.buttonCrossWebAppBrowse.Name = "buttonCrossWebAppBrowse";
-            this.buttonCrossWebAppBrowse.Size = new System.Drawing.Size(75, 23);
-            this.buttonCrossWebAppBrowse.TabIndex = 40;
-            this.buttonCrossWebAppBrowse.Text = "Browse";
-            this.buttonCrossWebAppBrowse.UseVisualStyleBackColor = true;
-            this.buttonCrossWebAppBrowse.Click += new System.EventHandler(this.buttonCrossWebAppBrowse_Click);
-            // 
-            // textBoxCrossWebAppFolder
-            // 
-            this.textBoxCrossWebAppFolder.Location = new System.Drawing.Point(123, 63);
-            this.textBoxCrossWebAppFolder.Name = "textBoxCrossWebAppFolder";
-            this.textBoxCrossWebAppFolder.ReadOnly = true;
-            this.textBoxCrossWebAppFolder.Size = new System.Drawing.Size(684, 20);
-            this.textBoxCrossWebAppFolder.TabIndex = 39;
-            this.textBoxCrossWebAppFolder.TextChanged += new System.EventHandler(this.textBoxCrossWebAppFolder_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(5, 63);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(90, 13);
-            this.label4.TabIndex = 38;
-            this.label4.Text = "Temp file location";
-            // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(451, 114);
+            this.label32.Location = new System.Drawing.Point(451, 75);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(84, 13);
             this.label32.TabIndex = 37;
@@ -1014,7 +975,7 @@
             // 
             this.comboBoxCrossWebAppDest.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCrossWebAppDest.FormattingEnabled = true;
-            this.comboBoxCrossWebAppDest.Location = new System.Drawing.Point(553, 114);
+            this.comboBoxCrossWebAppDest.Location = new System.Drawing.Point(553, 75);
             this.comboBoxCrossWebAppDest.Name = "comboBoxCrossWebAppDest";
             this.comboBoxCrossWebAppDest.Size = new System.Drawing.Size(350, 21);
             this.comboBoxCrossWebAppDest.TabIndex = 36;
@@ -1024,7 +985,7 @@
             // 
             this.labelCrossWebAppPrompt.AutoSize = true;
             this.labelCrossWebAppPrompt.ForeColor = System.Drawing.Color.Red;
-            this.labelCrossWebAppPrompt.Location = new System.Drawing.Point(700, 94);
+            this.labelCrossWebAppPrompt.Location = new System.Drawing.Point(700, 55);
             this.labelCrossWebAppPrompt.Name = "labelCrossWebAppPrompt";
             this.labelCrossWebAppPrompt.Size = new System.Drawing.Size(194, 13);
             this.labelCrossWebAppPrompt.TabIndex = 35;
@@ -1033,7 +994,7 @@
             // 
             // buttonCrossWebAppReset
             // 
-            this.buttonCrossWebAppReset.Location = new System.Drawing.Point(279, 189);
+            this.buttonCrossWebAppReset.Location = new System.Drawing.Point(279, 150);
             this.buttonCrossWebAppReset.Name = "buttonCrossWebAppReset";
             this.buttonCrossWebAppReset.Size = new System.Drawing.Size(75, 23);
             this.buttonCrossWebAppReset.TabIndex = 34;
@@ -1043,7 +1004,7 @@
             // 
             // buttonCrossWebAppMoveAll
             // 
-            this.buttonCrossWebAppMoveAll.Location = new System.Drawing.Point(360, 189);
+            this.buttonCrossWebAppMoveAll.Location = new System.Drawing.Point(360, 150);
             this.buttonCrossWebAppMoveAll.Name = "buttonCrossWebAppMoveAll";
             this.buttonCrossWebAppMoveAll.Size = new System.Drawing.Size(75, 23);
             this.buttonCrossWebAppMoveAll.TabIndex = 33;
@@ -1054,7 +1015,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(451, 195);
+            this.label25.Location = new System.Drawing.Point(451, 156);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(73, 13);
             this.label25.TabIndex = 32;
@@ -1065,9 +1026,9 @@
             this.listBoxCrossWebAppSPSiteDest.AllowDrop = true;
             this.listBoxCrossWebAppSPSiteDest.FormattingEnabled = true;
             this.listBoxCrossWebAppSPSiteDest.HorizontalScrollbar = true;
-            this.listBoxCrossWebAppSPSiteDest.Location = new System.Drawing.Point(454, 215);
+            this.listBoxCrossWebAppSPSiteDest.Location = new System.Drawing.Point(454, 176);
             this.listBoxCrossWebAppSPSiteDest.Name = "listBoxCrossWebAppSPSiteDest";
-            this.listBoxCrossWebAppSPSiteDest.Size = new System.Drawing.Size(449, 238);
+            this.listBoxCrossWebAppSPSiteDest.Size = new System.Drawing.Size(449, 277);
             this.listBoxCrossWebAppSPSiteDest.TabIndex = 31;
             this.listBoxCrossWebAppSPSiteDest.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxCrossWebAppSPSiteDest_DragDrop);
             this.listBoxCrossWebAppSPSiteDest.DragOver += new System.Windows.Forms.DragEventHandler(this.listBoxCrossWebAppSPSiteDest_DragOver);
@@ -1076,7 +1037,7 @@
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(3, 192);
+            this.label26.Location = new System.Drawing.Point(3, 153);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(233, 13);
             this.label26.TabIndex = 30;
@@ -1087,9 +1048,9 @@
             this.listBoxCrossWebAppSPSiteSource.AllowDrop = true;
             this.listBoxCrossWebAppSPSiteSource.FormattingEnabled = true;
             this.listBoxCrossWebAppSPSiteSource.HorizontalScrollbar = true;
-            this.listBoxCrossWebAppSPSiteSource.Location = new System.Drawing.Point(6, 215);
+            this.listBoxCrossWebAppSPSiteSource.Location = new System.Drawing.Point(6, 176);
             this.listBoxCrossWebAppSPSiteSource.Name = "listBoxCrossWebAppSPSiteSource";
-            this.listBoxCrossWebAppSPSiteSource.Size = new System.Drawing.Size(429, 238);
+            this.listBoxCrossWebAppSPSiteSource.Size = new System.Drawing.Size(429, 277);
             this.listBoxCrossWebAppSPSiteSource.TabIndex = 29;
             this.listBoxCrossWebAppSPSiteSource.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxCrossWebAppSPSiteSource_DragDrop);
             this.listBoxCrossWebAppSPSiteSource.DragOver += new System.Windows.Forms.DragEventHandler(this.listBoxCrossWebAppSPSiteSource_DragOver);
@@ -1098,7 +1059,7 @@
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(451, 144);
+            this.label27.Location = new System.Drawing.Point(451, 105);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(91, 13);
             this.label27.TabIndex = 28;
@@ -1108,7 +1069,7 @@
             // 
             this.comboBoxCrossWebAppContentDBDest.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCrossWebAppContentDBDest.FormattingEnabled = true;
-            this.comboBoxCrossWebAppContentDBDest.Location = new System.Drawing.Point(553, 141);
+            this.comboBoxCrossWebAppContentDBDest.Location = new System.Drawing.Point(553, 102);
             this.comboBoxCrossWebAppContentDBDest.Name = "comboBoxCrossWebAppContentDBDest";
             this.comboBoxCrossWebAppContentDBDest.Size = new System.Drawing.Size(350, 21);
             this.comboBoxCrossWebAppContentDBDest.TabIndex = 27;
@@ -1117,7 +1078,7 @@
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(3, 141);
+            this.label28.Location = new System.Drawing.Point(3, 102);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(91, 13);
             this.label28.TabIndex = 26;
@@ -1127,7 +1088,7 @@
             // 
             this.comboBoxCrossWebAppContentDBSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCrossWebAppContentDBSource.FormattingEnabled = true;
-            this.comboBoxCrossWebAppContentDBSource.Location = new System.Drawing.Point(105, 138);
+            this.comboBoxCrossWebAppContentDBSource.Location = new System.Drawing.Point(105, 99);
             this.comboBoxCrossWebAppContentDBSource.Name = "comboBoxCrossWebAppContentDBSource";
             this.comboBoxCrossWebAppContentDBSource.Size = new System.Drawing.Size(330, 21);
             this.comboBoxCrossWebAppContentDBSource.TabIndex = 25;
@@ -1136,7 +1097,7 @@
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(3, 114);
+            this.label29.Location = new System.Drawing.Point(3, 75);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(84, 13);
             this.label29.TabIndex = 24;
@@ -1146,7 +1107,7 @@
             // 
             this.comboBoxCrossWebAppSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCrossWebAppSource.FormattingEnabled = true;
-            this.comboBoxCrossWebAppSource.Location = new System.Drawing.Point(105, 111);
+            this.comboBoxCrossWebAppSource.Location = new System.Drawing.Point(105, 72);
             this.comboBoxCrossWebAppSource.Name = "comboBoxCrossWebAppSource";
             this.comboBoxCrossWebAppSource.Size = new System.Drawing.Size(330, 21);
             this.comboBoxCrossWebAppSource.TabIndex = 23;
@@ -1155,7 +1116,7 @@
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(585, 94);
+            this.label30.Location = new System.Drawing.Point(585, 55);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(60, 13);
             this.label30.TabIndex = 22;
@@ -1164,7 +1125,7 @@
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(67, 94);
+            this.label31.Location = new System.Drawing.Point(67, 55);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(41, 13);
             this.label31.TabIndex = 21;
@@ -1182,6 +1143,8 @@
             // 
             // textBoxPSScript
             // 
+            this.textBoxPSScript.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.textBoxPSScript.Location = new System.Drawing.Point(12, 532);
             this.textBoxPSScript.Multiline = true;
             this.textBoxPSScript.Name = "textBoxPSScript";
@@ -1199,35 +1162,39 @@
             this.label9.TabIndex = 20;
             this.label9.Text = "PowerShell script";
             // 
-            // textBoxInWebAppTempDbName
+            // labelTempDbName
             // 
-            this.textBoxInWebAppTempDbName.BackColor = System.Drawing.Color.White;
-            this.textBoxInWebAppTempDbName.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxInWebAppTempDbName.Location = new System.Drawing.Point(176, 22);
-            this.textBoxInWebAppTempDbName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxInWebAppTempDbName.Name = "textBoxInWebAppTempDbName";
-            this.textBoxInWebAppTempDbName.ReadOnly = true;
-            this.textBoxInWebAppTempDbName.Size = new System.Drawing.Size(261, 13);
-            this.textBoxInWebAppTempDbName.TabIndex = 37;
-            this.textBoxInWebAppTempDbName.Visible = false;
+            this.labelTempDbName.AutoSize = true;
+            this.labelTempDbName.Location = new System.Drawing.Point(219, 508);
+            this.labelTempDbName.Name = "labelTempDbName";
+            this.labelTempDbName.Size = new System.Drawing.Size(98, 13);
+            this.labelTempDbName.TabIndex = 45;
+            this.labelTempDbName.Text = "labelTempDbName";
             // 
-            // textBoxCrossWebAppTempDbName
+            // label4
             // 
-            this.textBoxCrossWebAppTempDbName.BackColor = System.Drawing.Color.White;
-            this.textBoxCrossWebAppTempDbName.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxCrossWebAppTempDbName.Location = new System.Drawing.Point(176, 22);
-            this.textBoxCrossWebAppTempDbName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxCrossWebAppTempDbName.Name = "textBoxCrossWebAppTempDbName";
-            this.textBoxCrossWebAppTempDbName.ReadOnly = true;
-            this.textBoxCrossWebAppTempDbName.Size = new System.Drawing.Size(259, 13);
-            this.textBoxCrossWebAppTempDbName.TabIndex = 44;
-            this.textBoxCrossWebAppTempDbName.Visible = false;
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(452, 114);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(77, 13);
+            this.label4.TabIndex = 43;
+            this.label4.Text = "Managed Path";
+            // 
+            // comboBoxInWebAppManagedPath
+            // 
+            this.comboBoxInWebAppManagedPath.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxInWebAppManagedPath.FormattingEnabled = true;
+            this.comboBoxInWebAppManagedPath.Location = new System.Drawing.Point(553, 114);
+            this.comboBoxInWebAppManagedPath.Name = "comboBoxInWebAppManagedPath";
+            this.comboBoxInWebAppManagedPath.Size = new System.Drawing.Size(350, 21);
+            this.comboBoxInWebAppManagedPath.TabIndex = 44;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(954, 811);
+            this.Controls.Add(this.labelTempDbName);
             this.Controls.Add(this.textBoxPSScript);
             this.Controls.Add(this.buttonClearPSScript);
             this.Controls.Add(this.label9);
@@ -1336,9 +1303,6 @@
         private System.Windows.Forms.ComboBox comboBoxCrossWebAppSource;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Button buttonCrossWebAppBrowse;
-        private System.Windows.Forms.TextBox textBoxCrossWebAppFolder;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.ComboBox comboBoxCrossWebAppManagedPath;
         private System.Windows.Forms.TextBox textBoxInWebAppDestDBSize;
@@ -1357,8 +1321,9 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton radioButtonCrossWebAppCopy;
         private System.Windows.Forms.RadioButton radioButtonCrossWebAppMove;
-        private System.Windows.Forms.TextBox textBoxInWebAppTempDbName;
-        private System.Windows.Forms.TextBox textBoxCrossWebAppTempDbName;
+        private System.Windows.Forms.Label labelTempDbName;
+        private System.Windows.Forms.ComboBox comboBoxInWebAppManagedPath;
+        private System.Windows.Forms.Label label4;
     }
 }
 
