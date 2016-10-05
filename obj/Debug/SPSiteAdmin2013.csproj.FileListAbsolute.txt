@@ -1,1 +1,9 @@
 E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\bin\Debug\SPSiteAdmin2013.exe.config
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.csprojResolveAssemblyReference.cache
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.Form1.resources
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.csproj.GenerateResource.Cache
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\bin\Debug\SPSiteAdmin2013.exe
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\bin\Debug\SPSiteAdmin2013.pdb
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.Properties.Resources.resources
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.exe
+E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.pdb

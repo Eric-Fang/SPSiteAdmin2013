@@ -30,6 +30,8 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageInWebApp = new System.Windows.Forms.TabPage();
+            this.comboBoxInWebAppManagedPath = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioButtonInWebAppCopy = new System.Windows.Forms.RadioButton();
             this.radioButtonInWebAppMove = new System.Windows.Forms.RadioButton();
@@ -125,8 +127,6 @@
             this.textBoxPSScript = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.labelTempDbName = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.comboBoxInWebAppManagedPath = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPageInWebApp.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -189,6 +189,24 @@
             this.tabPageInWebApp.TabIndex = 1;
             this.tabPageInWebApp.Text = "In WebApp";
             this.tabPageInWebApp.UseVisualStyleBackColor = true;
+            // 
+            // comboBoxInWebAppManagedPath
+            // 
+            this.comboBoxInWebAppManagedPath.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxInWebAppManagedPath.FormattingEnabled = true;
+            this.comboBoxInWebAppManagedPath.Location = new System.Drawing.Point(553, 114);
+            this.comboBoxInWebAppManagedPath.Name = "comboBoxInWebAppManagedPath";
+            this.comboBoxInWebAppManagedPath.Size = new System.Drawing.Size(350, 21);
+            this.comboBoxInWebAppManagedPath.TabIndex = 44;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(452, 114);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(77, 13);
+            this.label4.TabIndex = 43;
+            this.label4.Text = "Managed Path";
             // 
             // groupBox1
             // 
@@ -1171,24 +1189,6 @@
             this.labelTempDbName.TabIndex = 45;
             this.labelTempDbName.Text = "labelTempDbName";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(452, 114);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(77, 13);
-            this.label4.TabIndex = 43;
-            this.label4.Text = "Managed Path";
-            // 
-            // comboBoxInWebAppManagedPath
-            // 
-            this.comboBoxInWebAppManagedPath.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxInWebAppManagedPath.FormattingEnabled = true;
-            this.comboBoxInWebAppManagedPath.Location = new System.Drawing.Point(553, 114);
-            this.comboBoxInWebAppManagedPath.Name = "comboBoxInWebAppManagedPath";
-            this.comboBoxInWebAppManagedPath.Size = new System.Drawing.Size(350, 21);
-            this.comboBoxInWebAppManagedPath.TabIndex = 44;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1200,7 +1200,7 @@
             this.Controls.Add(this.label9);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
-            this.Text = "SharePoint site collection admin";
+            this.Text = "SharePoint 2013 Site collection admin";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPageInWebApp.ResumeLayout(false);
