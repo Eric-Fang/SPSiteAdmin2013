@@ -381,20 +381,21 @@ namespace SPSiteAdmin2013
 
             SPWebApplication objSPWebApp = SPWebService.ContentService.WebApplications[guidWebApp];
             SPContentDatabase objSPContentDatabase = objSPWebApp.ContentDatabases[guidContentDB];
-            try
+            foreach (SPSite objSPSite in objSPContentDatabase.Sites)
             {
-                foreach (SPSite objSPSite in objSPContentDatabase.Sites)
+                try
                 {
                     if (objSPSite.Url.EndsWith(@"Office_Viewing_Service_Cache"))
                         continue;
 
                     listBoxSPSite.Items.Add(new KeyValuePair<string, string>(objSPSite.Url, string.Format("{0}, {1}", objSPSite.RootWeb.Title, objSPSite.Url)));
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(string.Format("ex.Message={0}, ex.StackTrace={1}", ex.Message, ex.StackTrace));
-                throw;
+                catch (Exception ex)
+                {
+                    // MessageBox.Show(string.Format("PopulateSPSites(), ex.Message={0}, ex.StackTrace={1}", ex.Message, ex.StackTrace));
+                    // MessageBox.Show(string.Format("PopulateSPSites(), ex.Message={0}", ex.Message));
+                    //throw;
+                }
             }
 
             listBoxSPSite.DisplayMember = "Value";

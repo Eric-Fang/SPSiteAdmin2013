@@ -7,3 +7,12 @@ E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\bin\Debug\SPSiteAdmin2013.
 E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.Properties.Resources.resources
 E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.exe
 E:\EricFang\VisualStudio2013\CodePlex\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.pdb
+C:\EricFang\GitHub\SPSiteAdmin2013\bin\Debug\SPSiteAdmin2013.exe.config
+C:\EricFang\GitHub\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.exe
+C:\EricFang\GitHub\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.pdb
+C:\EricFang\GitHub\SPSiteAdmin2013\bin\Debug\SPSiteAdmin2013.exe
+C:\EricFang\GitHub\SPSiteAdmin2013\bin\Debug\SPSiteAdmin2013.pdb
+C:\EricFang\GitHub\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.csprojResolveAssemblyReference.cache
+C:\EricFang\GitHub\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.Form1.resources
+C:\EricFang\GitHub\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.Properties.Resources.resources
+C:\EricFang\GitHub\SPSiteAdmin2013\obj\Debug\SPSiteAdmin2013.csproj.GenerateResource.Cache
