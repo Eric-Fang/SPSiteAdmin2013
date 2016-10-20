@@ -198,6 +198,7 @@
             this.comboBoxInWebAppManagedPath.Name = "comboBoxInWebAppManagedPath";
             this.comboBoxInWebAppManagedPath.Size = new System.Drawing.Size(350, 21);
             this.comboBoxInWebAppManagedPath.TabIndex = 44;
+            this.comboBoxInWebAppManagedPath.SelectedIndexChanged += new System.EventHandler(this.comboBoxInWebAppManagedPath_SelectedIndexChanged);
             // 
             // label4
             // 
